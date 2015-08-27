@@ -5,7 +5,10 @@ date:   2015-08-28 19:22:54
 categories: dubbo
 ---
 现在遇到了一个问题，我有一个服务器群组，里面有一个服务ServiceA（举例）作为这个服务的调用方，给服务器群组里面的部分组做远程RPC调用，但是在本地的环境中，经常出现，当服务启动的时候，报了com.alibaba.dubbo.remoting.RemotingException这个错误，具体的如下：
-	```	com.alibaba.dubbo.remoting.RemotingException: client(url: dubbo://10.15.1.84:20880/com.lvmama.vst.newsearch.lucene.search.service.ComLuceneSearchService?anyhost=true&application=vst_search&check=false&codec=dubbo&default.check=false&default.retries=0&default.timeout=120000&dubbo=2.5.3&heartbeat=60000&interface=com.lvmama.vst.newsearch.lucene.search.service.ComLuceneSearchService&methods=searchHotelAutoComplete,searchDest,searchAll,search,searchHotelAutoCompleteByKeyword,searchHotelAutoParentIdMappingDistrictId&monitor=dubbo%3A%2F%2F192.168.0.107%3A7070%3Fdubbo%3D2.5.3%26interface%3Dcom.alibaba.dubbo.monitor.MonitorService%26pid%3D2972%26timestamp%3D1440668668251&pid=2972&side=consumer&timestamp=1440668668243) failed to connect to server /10.15.1.84:20880, error message is:Connection refused: no further information
+	```	com.alibaba.dubbo.remoting.RemotingException: client(url: dubbo://10.15.1.84:20880/com.lvmama.vst.newsearch.lucene.search.service.ComLuceneSearchService?anyhost=true&application=vst_search&check=false&codec=dubbo&default.check=false&default.retries=0&default.timeout=120000&dubbo=2.5.3
+	&heartbeat=60000&interface=com.lvmama.vst.newsearch.lucene.search.service.ComLuceneSearchService&methods=searchHotelAutoComplete,
+	searchDest,searchAll,search,searchHotelAutoCompleteByKeyword,searchHotelAutoParentIdMappingDistrictId&monitor=dubbo%3A%2F%2F192.168.0.107%3A7070%3Fdubbo%3D2.5.3%26interface%3D
+	com.alibaba.dubbo.monitor.MonitorService%26pid%3D2972%26timestamp%3D1440668668251&pid=2972&side=consumer&timestamp=1440668668243) failed to connect to server /10.15.1.84:20880, error message is:Connection refused: no further information
 		at com.alibaba.dubbo.remoting.transport.netty.NettyClient.doConnect(NettyClient.java:124)
 		at com.alibaba.dubbo.remoting.transport.AbstractClient.connect(AbstractClient.java:280)
 		at com.alibaba.dubbo.remoting.transport.AbstractClient$1.run(AbstractClient.java:145)
