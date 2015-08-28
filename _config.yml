@@ -14,7 +14,7 @@ github_username:  socoo123
 permalink: /:year/:month/:day/:title/
 
 # Build settings
-markdown: kramdown
+markdown: redcarpet
 
 paginate: 15
 paginate_path: "page:num"
