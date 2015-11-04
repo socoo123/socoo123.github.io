@@ -1,0 +1,47 @@
+---
+layout: post
+title:  "redis分实例方案"
+date:   2015-11-04 19:22:54
+categories: redis
+---
+最近生产环境经常会报以下的错误：
+
+     MISCONF Redis is configured to save RDB snapshots, but is currently not able to persist on disk. Commands that may modify the data set are disabled. Please check Redis logs for details about the error.
+
+经过网上搜索出来的答案，是以为redis默认配置的rdb存储方式导致的，配置如下：
+
+	save 900 1
+    save 300 10
+    save 60 10000
+
+这三个参数是或的关系，分别代表：每900秒执行一次，则save一次；每300秒执行10次，则save一次；每60秒执行10000次，则save一次。而这个save是redis内部的一个bgsave命令，就是后台fork了一份redis主进程，将里面的数据写入到磁盘里面。这就可能出现一个问题：当redis主进程的内存占有量超过一半的时候，会出现内存不够用的情况，因而出现了以上的错误。
+
+## 解决方案 ##
+当知道这个原因后，我就开始着手去想着解决此问题，redis目前对我们主要是两个地方的作用，1是当作常量数据库用，里面的数据定时更新，否则就永久保存，需要持久化支持；2是当作缓存使用，里面的数据设置了超时时间，更新比较频繁。另外为了增加系统的性能，线上采用了一主一从的配置，master负责写，slave复杂读。当知道这个情况的时候，首先考虑的是把redis分离，master和slave都分成两个实例，一个实例对应常量数据库，一个实例对应缓存，两个实例占用不同的端口号一一对应。
+
+## 详细配置 ##
+假定master主机的ip是192.168.0.1，slave的ip是192.168.0.2，copy配置里面的redis.conf,改名为redis6380.conf,修改的地方如下：
+
+	#将进程写到redis6380.pid里面
+    pidfile /var/run/redis6380.pid 
+	#指定端口
+	port 6380
+	
+	#去掉save选项
+	#save 900 1
+    #save 300 10
+    #save 60 10000
+	
+	#rdb数据名称
+	dbfilename dump6380.rdb
+
+	#指定本地数据库存放目录
+	dir /your path
+
+	#aof数据名称
+	appendfilename appendonly6380.aof
+
+其中slave还需要加一条，和主机端口号保持一致的sync配置：
+    slaveof 192.168.0.1 6380
+
+当配置完成之后，启用命令redis-server redis6380.conf启用服务，再查看redis进程，发现已经有了两个端口，监控工具里面，里面的key也是单独分离的。在jedis配置相应的端口之后，做到了redis的功能的分离。
