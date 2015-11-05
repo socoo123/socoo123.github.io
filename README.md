@@ -49,7 +49,7 @@ var duoshuoQuery = {short_name:"******"};
 ---
 
 Thank you.
-Here is my blog: [HyG](http://socoo123.github.io)
+Here is my blog: [socoo123](http://socoo123.github.io)
 
 ---
 
